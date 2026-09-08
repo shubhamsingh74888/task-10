@@ -2,8 +2,9 @@
 
 **Name:** Shubham Singh  
 **Task:** AWS CloudWatch Observability for Twenty CRM  
-**Date:** 07-09-2026  
-**Region:** Asia Pacific (Mumbai) — ap-south-1
+**Date:** 08-09-2026  
+**Region:** US East (N. Virginia) — us-east-1  
+**Organization:** PearlThoughts DevOps Internship
 
 ---
 
@@ -11,17 +12,18 @@
 
 1. [Introduction](#introduction)
 2. [Architecture Overview](#architecture-overview)
-3. [EC2 Instance Setup](#ec2-instance-setup)
-4. [Twenty CRM Deployment](#twenty-crm-deployment)
-5. [Default EC2 Metrics in CloudWatch](#default-ec2-metrics-in-cloudwatch)
-6. [CloudWatch Agent Setup](#cloudwatch-agent-setup)
-7. [Custom Metrics Verification](#custom-metrics-verification)
-8. [CloudWatch Alarms](#cloudwatch-alarms)
-9. [CloudWatch Dashboard](#cloudwatch-dashboard)
-10. [Load Testing & Results](#load-testing--results)
-11. [How CloudWatch Helps](#how-cloudwatch-helps)
-12. [Issues Faced & Solutions](#issues-faced--solutions)
-13. [Conclusion](#conclusion)
+3. [AWS Console Setup](#aws-console-setup)
+4. [EC2 Instance Setup](#ec2-instance-setup)
+5. [Twenty CRM Deployment](#twenty-crm-deployment)
+6. [Default EC2 Metrics in CloudWatch](#default-ec2-metrics-in-cloudwatch)
+7. [CloudWatch Agent Setup](#cloudwatch-agent-setup)
+8. [Custom Metrics Verification](#custom-metrics-verification)
+9. [CloudWatch Alarms](#cloudwatch-alarms)
+10. [CloudWatch Dashboard](#cloudwatch-dashboard)
+11. [Load Testing & Results](#load-testing--results)
+12. [How CloudWatch Helps](#how-cloudwatch-helps)
+13. [Issues Faced & Solutions](#issues-faced--solutions)
+14. [Conclusion](#conclusion)
 
 ---
 
@@ -29,7 +31,7 @@
 
 Amazon CloudWatch is AWS's native monitoring and observability service. It collects and tracks metrics, monitors log files, sets alarms, and automatically reacts to changes in AWS resources.
 
-In this task, I implemented AWS Observability for the **Twenty CRM** application running on an EC2 instance using Amazon CloudWatch. The implementation includes:
+In this task, I implemented AWS Observability for the Twenty CRM application running on an EC2 instance using Amazon CloudWatch. The implementation includes:
 
 - Deploying Twenty CRM on EC2 from the PearlThoughts repository
 - Installing and configuring the CloudWatch Agent
@@ -67,13 +69,14 @@ In this task, I implemented AWS Observability for the **Twenty CRM** application
                           │           │            │
                           │  ┌────────▼────────┐  │
                           │  │    Alarms        │  │
-                          │  │  CPU > 70%  🔴  │  │
-                          │  │  MEM > 80%  🔴  │  │
+                          │  │  CPU > 80%  🔴  │  │
+                          │  │  Disk > 80% 🔴  │  │
                           │  └────────┬────────┘  │
                           │           │            │
                           │  ┌────────▼────────┐  │
                           │  │   Dashboard      │  │
-                          │  │  (task-10)       │  │
+                          │  │ (shubham-singh-  │  │
+                          │  │    task-10)      │  │
                           │  └─────────────────┘  │
                           └───────────┬───────────┘
                                       │
@@ -86,16 +89,26 @@ In this task, I implemented AWS Observability for the **Twenty CRM** application
 
 ---
 
+## AWS Console Setup
+
+After logging into the AWS Console, the services used for this task were EC2, CloudWatch, Simple Notification Service (SNS), and IAM — all visible in the recently visited panel.
+
+![AWS Console Home](images/aws-console-home.png)
+
+*AWS Console home showing recently visited services: EC2, CloudWatch, SNS, and IAM used during Task 10.*
+
+---
+
 ## EC2 Instance Setup
 
 ### Instance Configuration
 
 | Setting | Value |
 |---|---|
-| Instance Name | shubhamsingh-task07 |
-| AMI | Ubuntu 26.04 LTS |
+| Instance Name | shubham-sing... (shubham-singh-task10) |
+| AMI | Ubuntu LTS |
 | Instance Type | t3.small |
-| Region | ap-south-1 (Mumbai) |
+| Region | us-east-1 (N. Virginia) |
 | IAM Role | CloudWatchAgentEC2Role |
 | Storage | 20 GB |
 
@@ -118,11 +131,19 @@ This role contains the `CloudWatchAgentServerPolicy` which allows:
 - Writing logs to CloudWatch Logs
 - Reading SSM parameters for configuration
 
+### EC2 Instance Termination
+
+After completing the task, the EC2 instance was terminated as per the internship policy. All three team instances (tannu-task10, shubham-sing..., vasundara-tas...) are shown in terminated state.
+
+![EC2 Instances Terminated](images/ec2-terminated.png)
+
+*EC2 Instances dashboard showing all 3 task-10 instances (tannu-task10, shubham-sing..., vasundara-tas...) in terminated state after task completion — region us-east-1, instance type t3.small.*
+
 ---
 
 ## Twenty CRM Deployment
 
-This project uses the **PearlThoughts DevOps CRM repository** — a Twenty CRM application scaffold that uses the `twenty-sdk` and runs a local Twenty server via Docker.
+This project uses the PearlThoughts DevOps CRM repository — a Twenty CRM application scaffold that uses the twenty-sdk and runs a local Twenty server via Docker.
 
 ### Prerequisites Installation
 
@@ -135,10 +156,6 @@ curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
 #  Every new SSH session forgets it, so we reload it manually)
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-
-# What the above two lines do:
-# Line 1: Sets NVM_DIR variable = /home/ubuntu/.nvm (where nvm is installed)
-# Line 2: Checks if nvm.sh file exists → if yes, loads nvm into this terminal
 
 # Step 3 — Install Node.js v24 (as required by .nvmrc in the project)
 nvm install 24
@@ -167,16 +184,22 @@ git clone https://github.com/PearlThoughts-Intern-DevOps/devops-crm-project.git
 cd devops-crm-project
 
 # Install all project dependencies
-# (downloads ~350MB of packages — do NOT interrupt with Ctrl+C)
 yarn install
 
 # Start the Twenty CRM server via Docker
-# (pulls twentycrm/twenty-app-dev Docker image and starts all services)
 yarn twenty docker:start
 
 # Verify it is running
 yarn twenty docker:status
 ```
+
+### Twenty CRM Running Successfully
+
+The Twenty CRM application was successfully deployed and accessible, showing 599 companies seeded in the workspace.
+
+![Twenty CRM Application](images/twenty-crm.png)
+
+*Twenty CRM application running successfully — Companies view showing 599 seeded companies (Google, Microsoft, Meta, SLB, Cisco, Uber, Salesforce, etc.) accessible at `http://<EC2-IP>:2020`.*
 
 ### Deployment Status Output
 
@@ -186,18 +209,13 @@ URL:     http://localhost:2020
 Version: v2.38.1
 ```
 
-### Start Development Server
-
-```bash
-# Syncs the app code with the running Twenty server
-yarn twenty dev
-```
-
 ### Accessing Twenty CRM
 
-- **URL:** `http://<EC2-PUBLIC-IP>:2020`
-- **Default Email:** `tim@apple.dev`
-- **Default Password:** `tim@apple.dev`
+| Field | Value |
+|---|---|
+| URL | http://\<EC2-PUBLIC-IP\>:2020 |
+| Default Email | tim@apple.dev |
+| Default Password | tim@apple.dev |
 
 ### What `yarn twenty docker:start` Actually Does
 
@@ -232,10 +250,10 @@ Before installing the CloudWatch Agent, AWS provides these default metrics autom
 | DiskReadOps | Disk read operations | ✅ Yes |
 | DiskWriteOps | Disk write operations | ✅ Yes |
 | StatusCheckFailed | Instance health check | ✅ Yes |
-| **Memory Usage %** | RAM utilization | ❌ NOT available |
-| **Disk Used %** | Disk utilization % | ❌ NOT available |
+| Memory Usage % | RAM utilization | ❌ NOT available |
+| Disk Used % | Disk utilization % | ❌ NOT available |
 
-> **Key Insight:** Memory and Disk utilization percentage are **NOT available** by default because AWS only has visibility from outside the VM (hypervisor level). The CloudWatch Agent runs inside the OS and sends these internal metrics to CloudWatch.
+> **Key Insight:** Memory and Disk utilization percentage are NOT available by default because AWS only has visibility from outside the VM (hypervisor level). The CloudWatch Agent runs inside the OS and sends these internal metrics to CloudWatch.
 
 ---
 
@@ -259,7 +277,7 @@ Instead of using the interactive wizard (which caused issues — see Issues sect
 sudo nano /opt/aws/amazon-cloudwatch-agent/bin/config.json
 ```
 
-**Configuration used:**
+Configuration used:
 
 ```json
 {
@@ -299,14 +317,14 @@ sudo nano /opt/aws/amazon-cloudwatch-agent/bin/config.json
 }
 ```
 
-**What each section means:**
+What each section means:
 
 | Config Section | Metric Collected | Interval |
 |---|---|---|
-| `cpu` | cpu_usage_user, cpu_usage_idle, cpu_usage_system | 60 seconds |
-| `mem` | mem_used_percent | 60 seconds |
-| `disk` | disk used_percent (root partition only) | 60 seconds |
-| `append_dimensions` | Tags each metric with InstanceId | — |
+| cpu | cpu_usage_user, cpu_usage_idle, cpu_usage_system | 60 seconds |
+| mem | mem_used_percent | 60 seconds |
+| disk | disk used_percent (root partition only) | 60 seconds |
+| append_dimensions | Tags each metric with InstanceId | — |
 
 ### Step 3 — Start the CloudWatch Agent
 
@@ -318,14 +336,14 @@ sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl \
   -s
 ```
 
-**What each flag means:**
+What each flag means:
 
 | Flag | Meaning |
 |---|---|
-| `-a fetch-config` | Load the config file |
-| `-m ec2` | Running on EC2 (not on-premises) |
-| `-c file:...` | Path to our config.json |
-| `-s` | Start the agent after loading config |
+| -a fetch-config | Load the config file |
+| -m ec2 | Running on EC2 (not on-premises) |
+| -c file:... | Path to our config.json |
+| -s | Start the agent after loading config |
 
 ### Step 4 — Verify Agent is Running
 
@@ -333,11 +351,12 @@ sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl \
 sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a status
 ```
 
-**Expected output:**
+Expected output:
+
 ```json
 {
   "status": "running",
-  "starttime": "2026-09-07T10:00:00Z",
+  "starttime": "2026-09-08T05:00:00Z",
   "version": "1.300072.0"
 }
 ```
@@ -348,7 +367,7 @@ sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a status
 
 After starting the agent and waiting 3-5 minutes:
 
-**CloudWatch → Metrics → All Metrics → CWAgent**
+`CloudWatch → Metrics → All Metrics → CWAgent`
 
 | Dimension Group | Metrics Available |
 |---|---|
@@ -364,53 +383,53 @@ After starting the agent and waiting 3-5 minutes:
 
 | Setting | Value |
 |---|---|
-| Alarm Name | task 10 |
+| Alarm Name | shubham-singh-task-10 |
 | Namespace | CWAgent |
 | Metric | cpu_usage_user |
 | Statistic | Average |
-| Period | 5 minutes |
+| Period | 1 minute |
 | Threshold Type | Static |
-| Condition | Greater than **70%** |
+| Condition | Greater than 80% |
 | Datapoints to Alarm | 1 out of 1 |
 | SNS Topic | portfolio-alerts |
 
-**Result:** ✅ Alarm triggered — CPU reached **86.07%** → alarm went **IN ALARM** state 🔴  
-**Email notification received** via SNS at 8:11 PM on Sep 7, 2026
-<img width="1920" height="1080" alt="Screenshot 2026-09-07 201213" src="https://github.com/user-attachments/assets/df139259-1a31-4976-95a8-45fb5c274693" />
-<img width="1917" height="902" alt="image" src="https://github.com/user-attachments/assets/7525434f-6c11-4689-85c0-be3704416c21" />
+**Result:** ✅ Alarm triggered — CPU reached **83.45%** → alarm went **IN ALARM** state 🔴
 
-### Alarm 2 — High Memory Utilization
+The graph below shows the `cpu_usage_user` metric spiking sharply to 83.45% at approximately 07:45 UTC, crossing the 80% threshold (red dashed line) and triggering the alarm.
+
+![CPU Alarm Triggered](images/cpu-alarm-triggered.png)
+
+*CloudWatch CPU alarm `shubham-singh-task-10` in **IN ALARM** state — `cpu_usage_user` spiked to 83.45%, exceeding the static threshold of 80% (1 datapoint within 1 minute). The alarm bar at the bottom shows the red IN ALARM band at the far right.*
+
+---
+
+### Alarm 2 — High Disk Utilization
 
 | Setting | Value |
 |---|---|
-| Alarm Name | task 10 high |
+| Alarm Name | shubbham-singh-task-10-disk-usage |
 | Namespace | CWAgent |
-| Metric | mem_used_percent |
+| Metric | disk_used_percent |
 | Statistic | Average |
 | Period | 5 minutes |
 | Threshold Type | Static |
-| Condition | Greater than **80%** |
+| Condition | Greater than 80% |
 | Datapoints to Alarm | 1 out of 1 |
 | SNS Topic | portfolio-alerts |
 
-**Result:** ✅ Alarm stayed **OK** — Memory peaked at **76.26%** (below 80% threshold)
+**Result:** ✅ Alarm stayed **OK** — Disk usage stayed well below 80% threshold.
 
-### SNS Email Notification Received
+The disk usage graph shows a steady reading around 42–61% — comfortably below the 80% alarm threshold (red line).
 
-When the CPU alarm triggered, AWS sent an automated email containing:
+![Disk Alarm OK - View 1](images/disk-alarm-ok.png)
 
-```
-Alarm Name:     task 10
-State Change:   OK -> ALARM
-Reason:         Threshold Crossed: cpu_usage_user was 72.73%
-                which is greater than threshold 70.0
-Timestamp:      Monday 07 September, 2026 14:41:57 UTC
-MetricName:     cpu_usage_user
-Namespace:      CWAgent
-InstanceId:     i-0b889666b08b658c5
-Period:         300 seconds
-Statistic:      Average
-```
+*CloudWatch disk alarm `shubbham-singh-task-10-disk-usage` — showing `disk_used_percent` metric in **OK** state. Disk usage ranged between ~42% and ~61%, staying well below the 80% threshold (red line). Total alarms: 11 in OK state, 0 in alarm.*
+
+![Disk Alarm OK - View 2](images/disk-alarm-ok-2.png)
+
+*Second view of the disk usage alarm in **OK** state — same alarm `shubbham-singh-task-10-disk-usage` with 10 alarms visible in the list panel, confirming stable disk utilization throughout the load test period.*
+
+---
 
 ### Alarm States Explained
 
@@ -424,26 +443,35 @@ Statistic:      Average
 
 ## CloudWatch Dashboard
 
-**Dashboard Name:** task-10
+**Dashboard Name:** `shubham-singh-task-10`
 
 ### Widgets Created
 
 | Widget # | Metric | Namespace | Purpose |
 |---|---|---|---|
-| 1 | disk_used_percent | CWAgent | Monitor disk storage usage |
-| 2 | cpu_usage_user | CWAgent | Monitor CPU workload |
+| 1 | cpu_usage_idle, cpu_usage_system, cpu_usage_user | CWAgent | Monitor all CPU components |
+| 2 | disk_used_percent | CWAgent | Monitor disk storage usage |
 | 3 | mem_used_percent | CWAgent | Monitor RAM usage |
-| 4 | cpu_usage_user + mem_used_percent + disk_used_percent | CWAgent | Combined overview |
+| 4 | cpu_usage_user + disk_used_percent + mem_used_percent | CWAgent | Combined overview |
+
+The dashboard below shows all 4 widgets during the load test, with visible spikes across CPU, Disk, and Memory metrics at approximately 07:00–07:30 UTC.
+
+![CloudWatch Dashboard](images/cloudwatch-dashboard.png)
+
+*CloudWatch Dashboard `shubham-singh-task-10` showing all 4 metric widgets during load testing:*
+- *Widget 1 (CPU): `cpu_usage_user` and `cpu_usage_idle` — spike visible, reaching ~99%*
+- *Widget 2 (Disk): `disk_used_percent` — spike to ~42.37%*
+- *Widget 3 (Memory): `mem_used_percent` — spike to ~66.04%*
+- *Widget 4 (Combined): All three metrics overlaid — peak at ~78.37%*
 
 ### Dashboard Observations During Load Test
 
 | Widget | Normal Value | Peak Value | Change |
 |---|---|---|---|
-| Disk | ~56.49% | **71.44%** | +14.95% |
-| CPU | ~1.55% | **36.57%** | +35% |
-| Memory | ~39.34% | **76.26%** | +36.92% |
-
-<img width="1917" height="930" alt="Screenshot 2026-09-07 200529" src="https://github.com/user-attachments/assets/5bc4730d-d202-4b95-81cb-f7bd0d4d3f17" />
+| CPU (user) | ~0.17% | ~99.35% | +99% spike |
+| Disk | ~42.02% | 42.37% | +0.35% |
+| Memory | ~62.32% | 66.04% | +3.72% |
+| Combined | ~0.33% | 78.37% | Multi-metric spike |
 
 ---
 
@@ -472,25 +500,24 @@ done
 
 | Metric | Before Stress | During Stress | Threshold | Alarm State |
 |---|---|---|---|---|
-| cpu_usage_user | ~1.55% | **86.07%** | 70% | 🔴 IN ALARM |
-| mem_used_percent | ~39.34% | **76.26%** | 80% | 🟢 OK |
-| disk_used_percent | ~56.49% | **71.44%** | None set | — |
+| cpu_usage_user | ~0.17% | 83.45% | 80% | 🔴 IN ALARM |
+| mem_used_percent | ~62.32% | 66.04% | — | 🟢 OK |
+| disk_used_percent | ~42.02% | 42.37% | 80% | 🟢 OK |
 
 ### Key Observations
 
-1. **CPU Alarm triggered** — stress pushed CPU to 86.07%, exceeding the 70% threshold ✅
-2. **SNS email received** — notification arrived within 5 minutes of threshold being crossed ✅
-3. **Memory stayed OK** — 500MB stress was not enough to push t3.small past 80% ✅
-4. **Disk increased** — Docker images and yarn packages consumed significant disk space
-5. **Dashboard updated live** — all 4 widgets showed spikes exactly when stress ran ✅
+- **CPU Alarm triggered** — stress pushed CPU to 83.45%, exceeding the 80% threshold ✅
+- **Memory stayed OK** — 500MB stress was not enough to push t3.small past the threshold ✅
+- **Disk stayed OK** — no significant disk write during the short test ✅
+- **Dashboard updated live** — all 4 widgets showed spikes exactly when stress ran ✅
 
 ---
 
-## Anomaly Detection (Explored but Not Used for Alarms)
+### Anomaly Detection (Explored but Not Used for Alarms)
 
-During the task, I also explored **CloudWatch Anomaly Detection** as an alternative alarm type.
+During the task, CloudWatch Anomaly Detection was also explored as an alternative alarm type.
 
-### What Anomaly Detection Does
+**What Anomaly Detection Does:**
 
 Instead of a fixed threshold, Anomaly Detection uses machine learning to learn your metric's normal pattern over time and creates a dynamic band:
 
@@ -505,11 +532,11 @@ CPU %
 Alarm triggers when metric goes OUTSIDE the band
 ```
 
-### Why It Was Not Used for This Task
+**Why It Was Not Used for This Task:**
 
 | Reason | Explanation |
 |---|---|
-| New instance | Anomaly Detection needs **2+ weeks** of historical data to learn patterns |
+| New instance | Anomaly Detection needs 2+ weeks of historical data to learn patterns |
 | No baseline | A fresh EC2 instance has no usage history to build a model from |
 | Unreliable results | With insufficient data, the band is inaccurate and causes false alarms |
 
@@ -520,25 +547,25 @@ Alarm triggers when metric goes OUTSIDE the band
 ## How CloudWatch Helps
 
 ### 1. Monitoring
-- **Real-time visibility** into EC2 instance health every 60 seconds
-- **Custom metrics** via CloudWatch Agent (Memory %, Disk % — not in default metrics)
-- **Dashboard** provides a single-pane view of all critical metrics
-- **Historical data** — metrics stored and queryable for analysis
-- **Namespace organization** — CWAgent metrics separate from default EC2 metrics
+- Real-time visibility into EC2 instance health every 60 seconds
+- Custom metrics via CloudWatch Agent (Memory %, Disk % — not in default metrics)
+- Dashboard provides a single-pane view of all critical metrics
+- Historical data — metrics stored and queryable for analysis
+- Namespace organization — CWAgent metrics separate from default EC2 metrics
 
 ### 2. Alerting
-- **CloudWatch Alarms** trigger automatically when thresholds are crossed
-- **SNS integration** sends email notifications instantly
-- **State transitions** — OK → ALARM → OK tracked with timestamps
-- **Multiple conditions** — can combine alarms using composite alarms
-- **Prevents downtime** — catch resource exhaustion before it crashes the app
+- CloudWatch Alarms trigger automatically when thresholds are crossed
+- SNS integration sends email notifications instantly
+- State transitions — OK → ALARM → OK tracked with timestamps
+- Multiple conditions — can combine alarms using composite alarms
+- Prevents downtime — catch resource exhaustion before it crashes the app
 
 ### 3. Troubleshooting
-- **Metrics history** — go back in time to see what happened during an incident
-- **Correlate metrics** — compare CPU, Memory, Disk spikes at the same timestamp
-- **Root cause analysis** — identify which metric spiked first
-- **Alarm history** — see exactly when alarms triggered and for how long
-- **Cross-service visibility** — correlate EC2 metrics with application behavior
+- Metrics history — go back in time to see what happened during an incident
+- Correlate metrics — compare CPU, Memory, Disk spikes at the same timestamp
+- Root cause analysis — identify which metric spiked first
+- Alarm history — see exactly when alarms triggered and for how long
+- Cross-service visibility — correlate EC2 metrics with application behavior
 
 ---
 
@@ -553,15 +580,16 @@ Alarm triggers when metric goes OUTSIDE the band
 ### Issue 2 — CollectD Not Installed
 
 **Problem:** Agent failed to start because CollectD was accidentally selected in the wizard  
-**Error:** `CollectD metrics_aggregation_interval` configuration error  
+**Error:** `CollectD metrics_aggregation_interval configuration error`  
 **Solution:** Removed the `collectd` section from `config.json` and restarted the agent:
+
 ```bash
 sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl \
   -a fetch-config -m ec2 \
   -c file:/opt/aws/amazon-cloudwatch-agent/bin/config.json -s
 ```
 
-### Issue 3 — EC2 Instance Auto-Terminated
+### Issue 3 — EC2 Instance Auto-Terminated (Previous Session)
 
 **Problem:** EC2 instance was automatically terminated after the 2-hour time limit before the task was complete  
 **Impact:** Lost all progress — had to re-setup the entire environment on a new instance  
@@ -570,13 +598,15 @@ sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl \
 ### Issue 4 — nvm Not Found After SSH Reconnect
 
 **Problem:** After reconnecting via SSH, the `nvm` command was not found  
-**Root Cause:** `nvm` is a shell function, not a regular installed program. It is loaded per terminal session and is lost when the SSH session closes  
+**Root Cause:** nvm is a shell function, not a regular installed program. It is loaded per terminal session and is lost when the SSH session closes  
 **Solution:** Manually reload nvm each time a new session starts:
+
 ```bash
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 ```
-**Explanation of the command:**
+
+Explanation of the command:
 - `export NVM_DIR="$HOME/.nvm"` → tells the shell where nvm is installed
 - `[ -s "$NVM_DIR/nvm.sh" ]` → checks if the nvm script file exists and is not empty
 - `&& \. "$NVM_DIR/nvm.sh"` → if it exists, loads (sources) it into the current session
@@ -585,38 +615,37 @@ export NVM_DIR="$HOME/.nvm"
 
 ## Conclusion
 
-This task successfully demonstrated AWS CloudWatch observability for the Twenty CRM application deployed on EC2.
+This task successfully demonstrated AWS CloudWatch observability for the Twenty CRM application deployed on EC2 within the PearlThoughts internship environment.
 
 ### Final Status Summary
 
 | Task | Status | Details |
 |---|---|---|
-| EC2 Instance launched | ✅ Done | t3.small, Ubuntu 26.04 |
+| EC2 Instance launched | ✅ Done | t3.small, Ubuntu LTS, us-east-1 |
 | IAM Role attached | ✅ Done | CloudWatchAgentEC2Role (pre-created) |
-| Twenty CRM deployed | ✅ Done | Via yarn twenty docker:start |
-| App accessible | ✅ Done | http://EC2-IP:2020 |
+| Twenty CRM deployed | ✅ Done | Via `yarn twenty docker:start` |
+| App accessible | ✅ Done | http://EC2-IP:2020, 599 companies seeded |
 | Default metrics explored | ✅ Done | EC2 namespace in CloudWatch |
 | CloudWatch Agent installed | ✅ Done | v1.300072.0 |
 | CPU metric collected | ✅ Done | cpu_usage_user |
 | Memory metric collected | ✅ Done | mem_used_percent |
 | Disk metric collected | ✅ Done | disk_used_percent |
-| CPU Alarm created | ✅ Done | Static > 70% |
-| Memory Alarm created | ✅ Done | Static > 80% |
-| CPU Alarm triggered | ✅ Done | Peaked at 86.07% |
-| SNS email received | ✅ Done | At 8:11 PM Sep 7 |
-| Dashboard created | ✅ Done | 4 widgets |
+| CPU Alarm created | ✅ Done | Static > 80% |
+| Disk Alarm created | ✅ Done | Static > 80% |
+| CPU Alarm triggered | ✅ Done | Peaked at 83.45% |
+| Dashboard created | ✅ Done | 4 widgets — `shubham-singh-task-10` |
 | Anomaly Detection explored | ✅ Done | Not used — insufficient data on new instance |
 | Load testing performed | ✅ Done | stress tool + curl requests |
 | EC2 terminated | ✅ Done | After task completion |
 
 ### Key Learnings
 
-1. **CloudWatch Agent is essential** — default EC2 metrics do not include Memory % or Disk %
-2. **IAM Role must be attached to EC2** — without it, the agent silently fails to send data
-3. **Manual config is better than wizard** — the wizard has too many prompts and can loop
-4. **Static threshold works from day one** — Anomaly Detection needs weeks of historical data
-5. **Dashboard gives real-time visibility** — critical for catching issues during load spikes
-6. **SNS + Alarms = automated alerting** — no need to manually watch metrics
+- **CloudWatch Agent is essential** — default EC2 metrics do not include Memory % or Disk %
+- **IAM Role must be attached to EC2** — without it, the agent silently fails to send data
+- **Manual config is better than wizard** — the wizard has too many prompts and can loop
+- **Static threshold works from day one** — Anomaly Detection needs weeks of historical data
+- **Dashboard gives real-time visibility** — critical for catching issues during load spikes
+- **SNS + Alarms = automated alerting** — no need to manually watch metrics
 
 ---
 
