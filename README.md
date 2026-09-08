@@ -376,6 +376,8 @@ After starting the agent and waiting 3-5 minutes:
 
 **Result:** ✅ Alarm triggered — CPU reached **86.07%** → alarm went **IN ALARM** state 🔴  
 **Email notification received** via SNS at 8:11 PM on Sep 7, 2026
+<img width="1920" height="1080" alt="Screenshot 2026-09-07 201213" src="https://github.com/user-attachments/assets/df139259-1a31-4976-95a8-45fb5c274693" />
+<img width="1917" height="902" alt="image" src="https://github.com/user-attachments/assets/7525434f-6c11-4689-85c0-be3704416c21" />
 
 ### Alarm 2 — High Memory Utilization
 
@@ -440,6 +442,8 @@ Statistic:      Average
 | Disk | ~56.49% | **71.44%** | +14.95% |
 | CPU | ~1.55% | **36.57%** | +35% |
 | Memory | ~39.34% | **76.26%** | +36.92% |
+
+<img width="1917" height="930" alt="Screenshot 2026-09-07 200529" src="https://github.com/user-attachments/assets/5bc4730d-d202-4b95-81cb-f7bd0d4d3f17" />
 
 ---
 
